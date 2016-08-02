@@ -43,7 +43,7 @@
   </target>
 
   <target name="setup:composer:install" description="Installs project dependencies, including drupal core and contrib." depends="setup:composer:clean">
-    <exec dir="${repo.root}" command="export COMPOSER_EXIT_ON_PATCH_FAILURE=1; composer install --ansi --no-interaction" logoutput="true" passthru="true" checkreturn="true"/>
+    <exec dir="${repo.root}" command="export COMPOSER_EXIT_ON_PATCH_FAILURE=1; composer install --ansi --no-interaction -v" logoutput="true" passthru="true" checkreturn="true"/>
   </target>
 
   <target name="setup:drupal:settings" description="Create local settings files using default settings files.">
