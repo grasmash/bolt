@@ -28,7 +28,7 @@
 
   <target name="setup:composer:clean" description="Wipes all composer managed directories and clears composer cache.">
     <echo>Removing all composer managed dependencies.</echo>
-    <delete>
+    <delete verbose="true">
       <fileset dir="${repo.root}">
         <include name="docroot/core"/>
         <include name="docroot/libraries"/>
