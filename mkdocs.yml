@@ -11,7 +11,7 @@ markdown_extensions:
 pages:
   - Home: 'README.md'
   - Getting Started: 'INSTALL.md'
-  - Project Documentation: 'template/README.md'
+  - Project Documentation:
     - Developer:
           - Onboarding: 'template/readme/onboarding.md'
           - Repository architecture: 'template/readme/repo-architecture.md'
