@@ -1,0 +1,6 @@
+framework:
+    secret: "Three can keep a secret, if two of them are dead."
+# Twig Configuration
+twig:
+    debug:            "%kernel.debug%"
+    strict_variables: "%kernel.debug%"
