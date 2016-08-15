@@ -35,6 +35,31 @@ drush:
     # The default drush alias to be used when no environment is specified.
   default_alias: ${drush.aliases.local}
 
+# Control which targets are run by the *:build:validate:test processes. You may
+# still execute any target individually.
+targets:
+  frontend:
+    build: true
+  setup:
+    behat: true
+    drupal:
+      config-import: true
+      hash-salt: true
+      install: true
+    git-hooks: true
+  tests:
+    behat: true
+    phpunit: true
+    security-updates: true
+  validate:
+    composer:
+      lint: true
+    php:
+      lint: true
+      sniff: true
+    twig:
+      lint: true
+
 # Custom tasks that are triggered at pre-defined times in the build process.
 # The tasks hook into BLT's existing Phing targets. Available hooks keys are:
 # frontend-build, post-deploy-build, and post-setup-build.

@@ -39,7 +39,8 @@
     "phing/phing":                  "dev-master#0ef30e55bb5871cb38903cc0ee9d76074118a22c",
     "jakoch/phantomjs-installer":   "1.9.8",
     "jarnaiz/behat-junit-formatter": "^1.2",
-    "symfony/templating": "~2"
+    "symfony/templating": "~2",
+    "symfony/console": "~2"
   },
   "autoload-dev": {
     "psr-4": {

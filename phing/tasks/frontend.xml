@@ -1,4 +1,8 @@
-<project name="frontend" default="frontend:install">
+<project name="frontend" default="frontend">
+
+  <target name="frontend" description="Runs all frontend targets"
+          depends="frontend:build">
+  </target>
 
   <target name="frontend:build" description="Uses project.yml hooks to run custom defined commands to build front end dependencies for custom themes.">
     <phingcall target="target-hook:invoke">

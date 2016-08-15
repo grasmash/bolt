@@ -74,4 +74,8 @@
     </phpcodesniffer>
   </target>
 
+  <target name="validate:twig" description="Validates twig files in custom themes.">
+    <exec dir="${repo.root}" command="${composer.bin}/console lint:twig ${docroot}/sites/themes/custom" checkreturn="true" logoutput="true" passthru="true"/>
+  </target>
+
 </project>

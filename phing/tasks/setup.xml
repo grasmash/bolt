@@ -107,7 +107,7 @@
 
   <target name="setup:drupal:install"
           description="Installs a specific Drupal site."
-          depends="setup:drupal:settings, setup:hash-salt, configure">
+          depends="setup:drupal:settings, setup:drupal:hash-salt, configure">
 
     <echo>Installing Drupal.</echo>
     <drush command="site-install" assume="yes" verbose="TRUE" alias="${drush.alias}">
@@ -121,7 +121,7 @@
       <param>"install_configure_form.update_status_module='array(FALSE,FALSE)'"</param>
     </drush>
 
-    <phingcall target="setup:config-import"/>
+    <phingcall target="setup:drupal:config-import"/>
 
     <!-- Set sites directory file permissions. -->
     <echo>Making ${docroot}/sites/default writable.</echo>
@@ -140,7 +140,7 @@
 
   </target>
 
-  <target name="setup:config-import" description="Import configuration from the config directory.">
+  <target name="setup:drupal:config-import" description="Import configuration from the config directory.">
     <echo>Importing configuration.</echo>
     <drush command="pm-enable" assume="yes" alias="${drush.alias}">
       <param>config</param>
@@ -173,7 +173,7 @@
     </chmod>
   </target>
 
-  <target name="setup:hash-salt" description="Generates and writes a hash salt to ${repo.root}/salt.txt if one does not exist.">
+  <target name="setup:drupal:hash-salt" description="Generates and writes a hash salt to ${repo.root}/salt.txt if one does not exist.">
     <!-- If a hash salt does not exist, generate one. -->
     <echo>Checking for hash salt in ${repo.root}/salt.txt</echo>
     <if>

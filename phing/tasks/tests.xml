@@ -2,7 +2,10 @@
 
   <target name="test" description="Runs all tests." depends="tests:all"></target>
 
-  <target name="tests:all" description="Runs all tests, including Behat, PHPUnit, and Security Update check."
+  <target name="tests" description="Runs all test targets."
+          depends="tests:all"/>
+
+  <target name="tests:all" description="Runs all test targets."
           depends="tests:security-updates, tests:phpunit, tests:behat"/>
 
   <!-- If you experience 'Maximum function nesting level' errors in your PHP
