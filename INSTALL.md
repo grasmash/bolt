@@ -53,9 +53,10 @@ To add BLT to a pre-existing Drupal project, do the following:
 1. Ensure that your project directory structure is Acquia-cloud compatible by asserting that the Drupal root is in a top-level folder called `docroot`.
 1. If you currently manage your dependencies via Composer, ensure that they are all up to date via `composer update`. Assert that these updates do not break your project.
 1. `cd` into your existing project directory.
+1. If you do not already have a `composer.json` file in your docroot, create one via `composer init`.
 1. Add BLT via composer and initialize it:
 
-        composer require acquia/blt:~8
+        composer require acquia/blt:~8 --dev
         ./vendor/acquia/blt/blt.sh init
 
 1. Follow instructions for [Setting up your \*AMP stack](#set-up-your-42amp-stack)
