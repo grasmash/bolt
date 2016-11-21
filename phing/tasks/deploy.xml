@@ -3,7 +3,7 @@
   <target name="deploy" description="Builds separate artifact and pushes to git.remotes defined project.yml.">
 
     <!-- Prompt for user input -->
-    <echo>This will build a production-safe artifact, commit it to a branch, and  push it to your git.remotes.</echo>
+    <echo>This will build a production-safe artifact, commit it to a branch, and push it to your git.remotes.</echo>
     <propertyprompt propertyName="deploy.commitMsg" useExistingValue="true" promptText="Enter a valid commit message" promptCharacter=":" />
     <propertyprompt propertyName="deploy.branch" useExistingValue="true" promptText="Enter a deploy branch" promptCharacter=":" />
 
@@ -50,7 +50,7 @@
 
     <!-- Generate an md5 sum of the remote URL to use as remote name. -->
     <exec command="echo ${deploy.remote} | openssl md5 | cut -d' ' -f 2" outputProperty="remoteName" checkreturn="true" level="${blt.exec_level}"/>
-    <exec command="git remote add ${remoteName} ${deploy.remote}" dir="${deploy.dir}" logoutput="true" checkreturn="true" level="${blt.exec_level}" passthru="true"/>
+    <exec command="git remote add ${remoteName} ${deploy.remote}" dir="${deploy.dir}" logoutput="false" checkreturn="false" level="${blt.exec_level}" passthru="true"/>
 
     <!-- @todo Only call this for the first remote. -->
     <phingcall target="deploy:remote:pull" />
@@ -80,9 +80,9 @@
 
     <if>
       <equals arg1="${simplesamlphp}" arg2="true"/>
-        <then>
-          <phingcall target="simplesamlphp:deploy:config"/>
-        </then>
+      <then>
+        <phingcall target="simplesamlphp:deploy:config"/>
+      </then>
     </if>
   </target>
 
@@ -97,7 +97,6 @@
       <equals arg1="${deploy.build-dependencies}" arg2="true"/>
       <then>
         <echo>Rebuilding composer dependencies without require-dev.</echo>
-        <delete dir="${deploy.dir}/vendor"/>
         <copy todir="${deploy.dir}" overwrite="true">
           <fileset dir="${repo.root}">
             <include name="composer.json"/>
@@ -108,7 +107,7 @@
       </then>
       <else>
         <echo>Dependencies will not be built because deploy.build-dependencies is not enabled.</echo>
-        <echo>You should define a custom deploy.exclude_file to ensure that dependecies are copied from the root repository.</echo>
+        <echo>You should define a custom deploy.exclude_file to ensure that dependencies are copied from the root repository.</echo>
       </else>
     </if>
 
@@ -130,10 +129,11 @@
   </target>
 
   <target name="deploy:prepare-dir" description="Delete the existing deploy directory and re-initialize as an empty git repository." hidden="true">
-    <delete dir="${deploy.dir}" failonerror="false" quiet="true" />
-    <exec command="git init ${deploy.dir}" logoutput="true" checkreturn="true" level="${blt.exec_level}" passthru="true"/>
+    <exec command="git init ${deploy.dir}" logoutput="true" checkreturn="false" level="${blt.exec_level}" passthru="true"/>
     <exec dir="${deploy.dir}" command="git config --local core.excludesfile false" logoutput="true" checkreturn="true" level="${blt.exec_level}" passthru="true"/>
     <echo>Global .gitignore file is being disabled for this repository to prevent unexpected behavior.</echo>
+    <exec dir="${deploy.dir}" command="git clean -fd ." logoutput="true" checkreturn="false" level="${blt.exec_level}" passthru="true"/>
+    <exec dir="${deploy.dir}" command="git reset --hard" logoutput="true" checkreturn="false" level="${blt.exec_level}" passthru="true"/>
   </target>
 
   <target name="deploy:push-all" hidden="true">
