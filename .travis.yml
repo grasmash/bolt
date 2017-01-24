@@ -113,6 +113,9 @@ script:
   # Run 'blt' phpunit tests, excluding deploy-push tests.
   - phpunit tests/phpunit --group blt --exclude-group deploy-push
 
+after_success:
+  - ./vendor/bin/coveralls -vvv
+
 deploy:
   provider: script
   script: cd ../blt-project && blt deploy -Ddeploy.commitMsg="Automated commit by Travis CI for Build ${TRAVIS_BUILD_ID}" -Ddeploy.branch="8.x-build" && phpunit tests/phpunit --group=deploy
