@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "0aeebdfc56bd42c68a8611eb0fde4a7b",
+    "content-hash": "715b8c955a2b4f8a2376767a968e72b4",
     "packages": [
         {
             "name": "alchemy/zippy",
@@ -382,12 +382,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/Robo.git",
-                "reference": "e53fdaa975b6578b1c9bbbe24cb6bb4f0f471153"
+                "reference": "854f7e5e7ebccd932cbe5ad356ffe2610692e945"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/Robo/zipball/e53fdaa975b6578b1c9bbbe24cb6bb4f0f471153",
-                "reference": "e53fdaa975b6578b1c9bbbe24cb6bb4f0f471153",
+                "url": "https://api.github.com/repos/consolidation/Robo/zipball/854f7e5e7ebccd932cbe5ad356ffe2610692e945",
+                "reference": "854f7e5e7ebccd932cbe5ad356ffe2610692e945",
                 "shasum": ""
             },
             "require": {
@@ -451,7 +451,7 @@
                 }
             ],
             "description": "Modern task runner",
-            "time": "2017-01-25 05:27:18"
+            "time": "2017-01-10 17:44:48"
         },
         {
             "name": "container-interop/container-interop",
