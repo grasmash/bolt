@@ -31,7 +31,7 @@
         "grasmash/drupal-security-warning": "^1.0.0",
         "grasmash/yaml-cli": "^0.3",
         "grasmash/yaml-expander": "^1.0.1",
-        "consolidation/Robo": "dev-master#854f7e5e7ebccd932cbe5ad356ffe2610692e945"
+        "consolidation/Robo": "dev-master"
     },
     "autoload": {
         "psr-4": {

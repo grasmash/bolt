@@ -129,7 +129,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface {
     if ($this->isInitialInstall()) {
       $this->io->write('<info>Creating BLT templated files...</info>');
       // The BLT command will not work at this point because the .git dir doesn't exist yet.
-      $success = $this->executeCommand($this->getVendorPath() . '/acquia/blt/blt.sh create-project', [], TRUE);
+      $success = $this->executeCommand($this->getVendorPath() . '/acquia/blt/bin/blt create-project', [], TRUE);
     }
     elseif ($options['blt']['update']) {
       $this->io->write('<info>Updating BLT templated files...</info>');
