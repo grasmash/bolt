@@ -20,12 +20,22 @@ class BuildCommand extends BltTasks {
    */
   public function setup() {
     $this->say("Setting up local environment...");
-    $status_code = $this->invokeCommands([
+    $commands = [
+      'install-alias',
       'setup:build',
       'setup:hash-salt',
-      'setup:drupal:install',
-      'install-alias',
-    ]);
+    ];
+
+    // Determine whether to re-install drupal or sync from another db.
+    if ($this->getConfigValue('setup.sync.db')) {
+      $commands[] = 'local:sync:db';
+    }
+    else {
+      $commands[] = 'setup:drupal:install';
+    }
+
+    $status_code = $this->invokeCommands($commands);
+
     return $status_code;
   }
 
@@ -116,7 +126,8 @@ class BuildCommand extends BltTasks {
    * @command setup:composer:install
    */
   public function composerInstall() {
-    $result = $this->taskExec("export COMPOSER_EXIT_ON_PATCH_FAILURE=1; composer install --ansi --no-interaction")
+    $extra = $this->getConfigValue('composer.extra');
+    $result = $this->taskExec("export COMPOSER_EXIT_ON_PATCH_FAILURE=1; composer install --ansi --no-interaction $extra")
       ->dir($this->getConfigValue('repo.root'))
       ->interactive()
       ->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE)

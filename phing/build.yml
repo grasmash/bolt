@@ -138,8 +138,12 @@ project:
   local:
     uri: ${project.local.protocol}://${project.local.hostname}
 
-sync:
-  # By default, files are not synced during local:sync.
-  # Set this value to 'true' or pass -Dsync.files=true
-  # to override this behavior.
-  files: false
+setup:
+  sync:
+    # By default, files are not synced during local:sync.
+    # Set this value to 'true' or pass -Dsync.files=true
+    # to override this behavior.
+    files: false
+    # If false, Drupal will be re-installed each time that `blt setup` is run. If true, the db will be synced from
+    # drush.aliases.test.
+    db: false
