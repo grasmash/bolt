@@ -247,7 +247,7 @@ class Inspector implements BuilderAwareInterface, ConfigAwareInterface, LoggerAw
       ->run();
     $output = $result->getOutputData();
 
-    return !strstr($output, "poweroff");
+    return strstr($output, "running");
   }
 
   /**
