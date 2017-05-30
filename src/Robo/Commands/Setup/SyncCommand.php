@@ -103,7 +103,8 @@ class SyncCommand extends BltTasks {
     $remote_alias = '@' . $this->getConfigValue('drush.aliases.remote');
 
     $task = $this->taskDrush()
-      ->alias(NULL)
+      ->alias('')
+      ->assume('')
       ->drush('cache-clear drush')
       ->drush('sql-drop')
       ->drush('sql-sync')
