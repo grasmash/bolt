@@ -260,7 +260,7 @@ class BehatCommand extends TestsCommandBase {
       $task = $this->taskBehat($this->getConfigValue('composer.bin') . '/behat')
         ->format('pretty')
         ->arg($behat_path)
-        ->option('ansi')
+        ->option('colors')
         ->noInteraction()
         ->printMetadata(FALSE)
         ->stopOnFail()
