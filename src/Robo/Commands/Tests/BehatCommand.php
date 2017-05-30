@@ -223,6 +223,7 @@ class BehatCommand extends TestsCommandBase {
       ->background()
       ->timeout(6000)
       ->silent(TRUE)
+      ->interactive(FALSE)
       ->run();
   }
 
