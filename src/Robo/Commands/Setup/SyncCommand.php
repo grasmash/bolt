@@ -53,6 +53,7 @@ class SyncCommand extends BltTasks {
   public function syncDbAll() {
     $multisites = $this->getConfigValue('multisites');
     foreach ($multisites as $multisite) {
+      $this->say("Syncing db for site <comment>$multisite</comment>...");
       $result = $this->syncDbMultisite($multisite);
       if (!$result->wasSuccessful()) {
         return $result;
