@@ -7,8 +7,7 @@
 # an existing branch or tag from the Code drop-down list. See
 # ../README.md for details.
 #
-# Usage: post-code-deploy site target-env source-branch deployed-tag repo-url
-#                         repo-type
+# Usage: post-code-deploy site target-env source-branch deployed-tag repo-url repo-type
 
 set -ev
 
@@ -19,10 +18,20 @@ deployed_tag="$4"
 repo_url="$5"
 repo_type="$6"
 
+repo_root="/var/www/html/$site.$target_env"
+export PATH=$repo_root/vendor/bin:$PATH
 
-  . /var/www/html/$site.$target_env/vendor/acquia/blt/scripts/cloud-hooks/functions.sh
-  deploy_updates
-  # Send notifications to Slack, if configured. See readme/deploy.md for setup instructions.
-  . `dirname $0`/../slack.sh
+case $target_env in
+  [01]*)
+    . /var/www/html/$site.$target_env/vendor/acquia/blt/scripts/cloud-hooks/functions.sh
+    acsf_deploy
+    ;;
+  *)
+    blt deploy:update:all
+    ;;
+  esac
+
+# Send notifications to Slack, if configured. See readme/deploy.md for setup instructions.
+. `dirname $0`/../slack.sh
 
 set +v
