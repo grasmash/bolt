@@ -3,7 +3,6 @@
 namespace Acquia\Blt\Robo;
 
 use Acquia\Blt\Robo\Common\Executor;
-use Acquia\Blt\Robo\Common\ExecutorAwareInterface;
 use Acquia\Blt\Robo\Datastore\FileStore;
 use Acquia\Blt\Robo\Filesets\FilesetManager;
 use Acquia\Blt\Robo\Inspector\Inspector;
@@ -206,7 +205,7 @@ class Blt implements ContainerAwareInterface, LoggerAwareInterface {
     try {
       $analytics_manager->initialize();
     }
-      // Fail silently.
+    // Fail silently.
     catch (\Exception $e) {
       $this->logger->debug("Failed to initialize AnalyticsManager.");
       $this->logger->debug($e->getMessage());
@@ -261,4 +260,5 @@ class Blt implements ContainerAwareInterface, LoggerAwareInterface {
       $this->logger->warning("The xDebug extension is loaded. This will significantly decrease performance.");
     }
   }
+
 }

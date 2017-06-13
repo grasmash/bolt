@@ -40,5 +40,4 @@ class BltException extends \Exception {
     ]);
   }
 
-
 }
