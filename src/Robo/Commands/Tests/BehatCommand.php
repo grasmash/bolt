@@ -271,7 +271,7 @@ class BehatCommand extends TestsCommandBase {
       $result = $task->run();
 
       if (!$result->wasSuccessful()) {
-        throw new BltException("Behat tests failed!");
+        throw new BltException("Behat tests failed!", 0, NULL, $this->getContainer('analyticsManager'));
       }
     }
   }

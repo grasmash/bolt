@@ -105,7 +105,7 @@ class SimpleSamlPhpCommand extends BltTasks {
       ->run();
 
     if (!$result->wasSuccessful()) {
-      throw new BltException("Unable to initialize SimpleSamlPhp configuration.");
+      throw new BltException("Unable to initialize SimpleSamlPhp configuration.", 0, NULL, $this->getContainer('analyticsManager'));
     }
   }
 

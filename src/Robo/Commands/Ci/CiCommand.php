@@ -24,7 +24,7 @@ class CiCommand extends BltTasks {
       ->run();
 
     if (!$result->wasSuccessful()) {
-      throw new BltException("Could not initialize Acquia Pipelines configuration.");
+      throw new BltException("Could not initialize Acquia Pipelines configuration.", 0, NULL, $this->getContainer('analyticsManager'));
     }
 
     $this->say("<info>A pre-configured acquia-pipelines.yml file was copied to your repository root.</info>");
@@ -43,7 +43,7 @@ class CiCommand extends BltTasks {
       ->run();
 
     if (!$result->wasSuccessful()) {
-      throw new BltException("Could not initialize Travis CI configuration.");
+      throw new BltException("Could not initialize Travis CI configuration.", 0, NULL, $this->getContainer('analyticsManager'));
     }
 
     $this->say("<info>A pre-configured .travis.yml file was copied to your repository root.</info>");

@@ -93,7 +93,7 @@ class AcsfCommand extends BltTasks {
       }
       else {
         // @todo revert previous file chanages.
-        throw new BltException("Unable to install drupal/acsf package.");
+        throw new BltException("Unable to install drupal/acsf package.", 0, NULL, $this->getContainer('analyticsManager'));
       }
     }
   }

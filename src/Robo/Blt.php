@@ -3,6 +3,7 @@
 namespace Acquia\Blt\Robo;
 
 use Acquia\Blt\Robo\Common\Executor;
+use Acquia\Blt\Robo\Common\ExecutorAwareInterface;
 use Acquia\Blt\Robo\Datastore\FileStore;
 use Acquia\Blt\Robo\Filesets\FilesetManager;
 use Acquia\Blt\Robo\Inspector\Inspector;
@@ -28,6 +29,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  * The BLT Robo application.
  */
 class Blt implements ContainerAwareInterface, LoggerAwareInterface {
+
+  const VERSION = '8.9.0';
 
   use ConfigAwareTrait;
   use ContainerAwareTrait;
@@ -64,7 +67,7 @@ class Blt implements ContainerAwareInterface, LoggerAwareInterface {
   ) {
 
     $this->setConfig($config);
-    $application = new Application('BLT', $config->get('version'));
+    $application = new Application('BLT', Blt::VERSION);
     $container = Robo::createDefaultContainer($input, $output, $application,
       $config);
     $this->setContainer($container);
@@ -196,6 +199,19 @@ class Blt implements ContainerAwareInterface, LoggerAwareInterface {
 
     $container->share('filesetManager', FilesetManager::class);
 
+    $container->share('analyticsManager', AnalyticsManager::class)
+      ->withArgument('executor');
+    /** @var \Acquia\Blt\Robo\AnalyticsManager $analytics_manager */
+    $analytics_manager = $container->get('analyticsManager');
+    try {
+      $analytics_manager->initialize();
+    }
+      // Fail silently.
+    catch (\Exception $e) {
+      $this->logger->debug("Failed to initialize AnalyticsManager.");
+      $this->logger->debug($e->getMessage());
+    }
+
     /** @var \Consolidation\AnnotatedCommand\AnnotatedCommandFactory $factory */
     $factory = $container->get('commandFactory');
     // Tell the command loader to only allow command functions that have a
@@ -245,5 +261,4 @@ class Blt implements ContainerAwareInterface, LoggerAwareInterface {
       $this->logger->warning("The xDebug extension is loaded. This will significantly decrease performance.");
     }
   }
-
 }

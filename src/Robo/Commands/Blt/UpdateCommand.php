@@ -153,7 +153,7 @@ class UpdateCommand extends BltTasks {
       ->run();
 
     if (!$result->wasSuccessful()) {
-      throw new BltException("Could not initialize new git repository.");
+      throw new BltException("Could not initialize new git repository.", 0, NULL, $this->getContainer('analyticsManager'));
     }
   }
 
@@ -179,7 +179,7 @@ class UpdateCommand extends BltTasks {
       ->run();
 
     if (!$result->wasSuccessful()) {
-      throw new BltException("Could not remove deprecated files provided by acquia/blt-project.");
+      throw new BltException("Could not remove deprecated files provided by acquia/blt-project.", 0, NULL, $this->getContainer('analyticsManager'));
     }
   }
 
@@ -198,7 +198,7 @@ class UpdateCommand extends BltTasks {
       ->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE)
       ->run();
     if (!$result->wasSuccessful()) {
-      throw new BltException("Could not remove Composer files.");
+      throw new BltException("Could not remove Composer files.", 0, NULL, $this->getContainer('analyticsManager'));
     }
 
     $result = $this->taskExecStack()
@@ -208,7 +208,7 @@ class UpdateCommand extends BltTasks {
       ->run();
 
     if (!$result->wasSuccessful()) {
-      throw new BltException("Could not install Composer requirements.");
+      throw new BltException("Could not install Composer requirements.", 0, NULL, $this->getContainer('analyticsManager'));
     }
   }
 
@@ -322,7 +322,7 @@ class UpdateCommand extends BltTasks {
       ->run();
 
     if (!$result->wasSuccessful()) {
-      throw new BltException("Could not rsync files from BLT into your repository.");
+      throw new BltException("Could not rsync files from BLT into your repository.", 0, NULL, $this->getContainer('analyticsManager'));
     }
   }
 
@@ -338,7 +338,7 @@ class UpdateCommand extends BltTasks {
     $munged_json = ComposerMunge::munge($project_composer_json, $template_composer_json);
     $bytes = file_put_contents($project_composer_json, $munged_json);
     if (!$bytes) {
-      throw new BltException("Could not update $project_composer_json.");
+      throw new BltException("Could not update $project_composer_json.", 0, NULL, $this->getContainer('analyticsManager'));
     }
   }
 
@@ -355,7 +355,7 @@ class UpdateCommand extends BltTasks {
     $munged_yaml = YamlMunge::munge($this->getConfigValue('blt.root') . '/template/blt/project.yml', $repo_project_yml);
     $bytes = file_put_contents($this->getConfigValue('blt.config-files.project'), $munged_yaml);
     if (!$bytes) {
-      throw new BltException("Could not update $repo_project_yml.");
+      throw new BltException("Could not update $repo_project_yml.", 0, NULL, $this->getContainer('analyticsManager'));
     }
   }
 
@@ -371,7 +371,7 @@ class UpdateCommand extends BltTasks {
       ->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE)
       ->run();
     if (!$result->wasSuccessful()) {
-      throw new BltException("Could not set value for project.machine_name in {$this->getConfigValue('blt.config-files.project')}.");
+      throw new BltException("Could not set value for project.machine_name in {$this->getConfigValue('blt.config-files.project')}.", 0, NULL, $this->getContainer('analyticsManager'));
     }
   }
 

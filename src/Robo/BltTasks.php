@@ -230,7 +230,7 @@ class BltTasks implements ConfigAwareInterface, InspectorAwareInterface, LoggerA
         $files = iterator_to_array($fileset);
         $result = $this->executeCommandAgainstFiles($files, $command, $parallel);
         if (!$result->wasSuccessful()) {
-          throw new BltException("Executing `$command` against $fileset_id returned a non-zero exit code.`");
+          throw new BltException("Executing `$command` against $fileset_id returned a non-zero exit code.`", 0, NULL, $this->getContainer('analyticsManager'));
         }
       }
       else {

@@ -27,7 +27,7 @@ class ComposerCommand extends BltTasks {
       $this->logger->error("composer.lock is invalid.");
       $this->say("If this is simply a matter of the lock file being out of date, you may attempt to use `composer update --lock` to quickly generate a new hash in your lock file.");
       $this->say("Otherwise, `composer update` is likely necessary.");
-      throw new BltException("composer.lock is invalid!");
+      throw new BltException("composer.lock is invalid!", 0, NULL, $this->getContainer('analyticsManager'));
     }
   }
 

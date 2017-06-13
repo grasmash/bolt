@@ -120,7 +120,7 @@ class AliasCommand extends BltTasks {
     $new_contents = str_replace($alias_info['alias'], $alias_info['canonical_alias'], $alias_info['contents']);
     $bytes = file_put_contents($alias_info['config_file'], $new_contents);
     if ($bytes) {
-      throw new BltException("Could not update BLT alias in {$alias_info['config_file']}.");
+      throw new BltException("Could not update BLT alias in {$alias_info['config_file']}.", 0, NULL, $this->getContainer('analyticsManager'));
     }
 
     $this->say("<info>The <comment>blt</comment> alias was updated in {$alias_info['config_file']}");
@@ -171,7 +171,7 @@ class AliasCommand extends BltTasks {
           ->run();
 
         if (!$result->wasSuccessful()) {
-          throw new BltException("Could not create $bash_profile.");
+          throw new BltException("Could not create $bash_profile.", 0, NULL, $this->getContainer('analyticsManager'));
         }
       }
     }

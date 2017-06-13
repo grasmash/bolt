@@ -23,7 +23,7 @@ class RefreshCommand extends BltTasks {
       $this->say("Refreshing site <comment>$multisite</comment>...");
       $exit_code = $this->refreshMultisite($multisite);
       if ($exit_code) {
-        throw new BltException("Could not refresh site '$multisite'.");
+        throw new BltException("Could not refresh site '$multisite'.", 0, NULL, $this->getContainer('analyticsManager'));
       }
     }
 

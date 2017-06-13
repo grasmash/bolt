@@ -22,8 +22,7 @@ class DbCommand extends BltTasks {
       $this->say("Syncing db for site <comment>$multisite</comment>...");
       $result = $this->syncDbMultisite($multisite);
       if (!$result->wasSuccessful()) {
-        $this->logger->error("Could not sync database for site '$multisite'.");
-        throw new BltException("Could not sync database.");
+        throw new BltException("Could not sync database for site '$multisite'.", 0, NULL, $this->getContainer('analyticsManager'));
       }
     }
 

@@ -14,6 +14,17 @@ use Symfony\Component\Console\Event\ConsoleCommandEvent;
 class CommandEventHook extends BltTasks {
 
   /**
+   * Tracks command event data.
+   *
+   * @hook command-event *
+   */
+  public function trackCommandEvent(ConsoleCommandEvent $event) {
+    /** @var \Acquia\Blt\Robo\AnalyticsManager $analytics_manager */
+    $analytics_manager = $this->getContainer()->get('analyticsManager');
+    $analytics_manager->trackEvent('command.' . $event->getCommand()->getName(), []);
+  }
+
+  /**
    * Disable any command listed in the `disable-target` config key.
    *
    * @hook command-event *
