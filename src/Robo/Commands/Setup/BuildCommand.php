@@ -86,6 +86,8 @@ class BuildCommand extends BltTasks {
     $result = $taskFilesystemStack->run();
 
     if (!$result->wasSuccessful()) {
+      $this->say($result->getMessage());
+
       throw new BltException("Unable to set permissions for site directories.");
     }
   }
