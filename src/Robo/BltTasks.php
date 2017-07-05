@@ -303,6 +303,8 @@ class BltTasks implements ConfigAwareInterface, InspectorAwareInterface, LoggerA
   protected function executeCommandAgainstFilesProcedurally($files, $command) {
     $task = $this->taskExecStack()
       ->printMetadata(FALSE)
+      // This still doesn't work! Stops after first failure.
+      ->stopOnFail(FALSE)
       ->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERY_VERBOSE);
 
     foreach ($files as $file) {
