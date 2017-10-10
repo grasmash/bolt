@@ -1,4 +1,131 @@
-# Change Log
+# Changelog
+
+#### 9.0.0 (2017-10-10)
+
+[Full Changelog](https://github.com/acquia/blt/compare/9.0.0-alpha1...9.0.0)
+
+**Implemented enhancements**
+
+- Make caching configuration hosting provider agnostic. (#2116)
+- Provide better Memcached boilerplate config. (#2063)
+- Drupal 8.4 compatibility improvements. (#2080)
+- Removing sudo from Travis. (#2066)
+- Remove any NULL arguments from original command being passed into VM, so that missing arguments detected faster. (#2058)
+- Add additional settings file include options #2054 (#2055)
+- Add support for Apache Solr search (Acquia Search) #412. (#2053)
+- Cleaning up composer requirements. (#2050)
+- Fixes #2040: Assert existence of .nvmrc or .node-version. (#2042)
+- Refactoring blt.settings.php. (#2038)
+- Fixes #1986 #2029: Allow beetbox base, fix drush aliases in Vm." (#2033)
+- Remove stale DrupalVM config option (#2035)
+- Fixes #2026: Support profile installation from config. (#2032)
+- Add memcached to the list of installed_extras in config.yml. (#2027) (#2028)
+- Validating drush aliases. (#2025)
+- Testing Drupal 8.4.x. (#1966)
+- Fixes #1956: Blt:validate should check for deprecated Drupal core functions in custom code. (#1973)
+- Fixes #1568: Use deployment identifier to prevent problems with ApcClassLoader cache. (#2017)
+- Fixes #1163: Include acquia_purge module by default. (#2016)
+- BLT-2005: updating pipelines schema version and including additional parameters in template. (#2006)
+- Fixing add-to-existing task. (#2010)
+- Removing reference to composer.overrides.json. (#2001)
+- Fixes #1445: Add new task to provide local drush server. (#2002)
+- Add .functions to the list of dotfiles searched for blt alias. (1994) (#1995)
+- Moving asset packagist to composer.suggested.json. (#1991)
+- Fixes #1932: Remove .drush-use in preparation for Drush 9. (#1987)
+- Fixes #1915: Default site factory applications to PHP 5.6. (#1972)
+- Allow config override for sync:refresh. (#1930)
+- Composer.json suggested changes. (#1950)
+- Add to phpunit command support for testsuite option (#1787). (#1960)
+- Support pulling JavaScript libraries from Asset Packagist (#1923)
+- Use the latest chromedriver. (#1967)
+- Adds manual port information for SimpleSAML when on Acquia Cloud. (#1958)
+- Acquia Cloud settings include with multisite support. (#1961)
+- Improving PHPCBF integration. (#1945)
+- Fixed setup for high-number ODEs. (#1933)
+- Adds template for allowing warnings/errors to succeed. (#1937)
+- Sort composer dependencies by default (#1926)
+- Adding NVM to Pipelines. (#1922)
+- Fixed failing npm installs in Pipelines. (#1921)
+- Improve support for multisites in DrupalVM. (#1916)
+- Executing examples:init during project creation. (#1910)
+- Fixes #1888: Default to PHP 7.1. (#1901)
+- Updated plugin to scaffold composer include files. (#1885)
+
+**Fixed bugs**
+
+- Removing @self default alias. (#2104)
+- Fixing features override deprecation. (#2095)
+- Fixes #2072: temporarily disabling checking of features overrides. (#2082)
+- Fixes #2059: override site uri during deploy:update. (#2060)
+- Fixes #1872: Command arguments lost when invokeCommand is called with @executeInDrupalVm within a Robo watch task. (#2052)
+- Fixes #2048: PHP Warning when using modules.local.uninstall: null. (#2049)
+- Add back line removed in #2039 (#2043)
+- Fixing VM config property expansion. (#2039)
+- Removing drush version constraint. (#2037)
+- Fixes #2013: toggleModules uses non-existent drush option --skip. (#2014)
+- Fixing tests:security-updates. (#2020)
+- Fix Drush 9 compatibility. (#2018)
+- Revert "Fixes #1543: Twig Lint is not maintained and fails valid twig code. (#1975)" (#2021)
+- Fixes #2007: BLT Doctor broken in Drush 9. (#2009)
+- Uses array_key_exists to check $SERVER for HTTPS key. (#1999)
+- Fixes #1976,#1972: Options passed to `blt deploy` are also passed down to `blt frontend` which then fails  (#1998)
+- Update composer.required.json (#1990)
+- Connects to #1979: Restricting Behat to 3.3.*. (#1981)
+- Fixes #1543: Twig Lint is not maintained and fails valid twig code. (#1975)
+- BLT-1962: adding environment calls to pipelines scripts. (#1963)
+- Fixes #1935: features-import-all build step errors do not fail build. (#1942)
+- Fixes #1938: Configurable test steps are bypassed and Blt is doing fresh install instead. (#1939)
+- Check if ['USER'] is defined. (#1928)
+- Fix blt sync:files command so it runs outside VM (#1911)
+- Fixed BLT doctor VM errors. (#1909)
+- Fix BLT version constant. (#1908)
+- Small fix to custom Drupal-VM. (#1902)
+
+**Miscellaneous**
+
+- Porting pre-release-tests to Robo.
+- Updating pre-release-tests.sh to use 9.x.
+- Updating deps.
+- Splitting into smaller methods.
+- Don't rely on taskOpenBrowser customization.
+- Refactoring release commands.
+- Update onboarding.md (#2119)
+- Update README.md
+- Update README.md
+- Update README.md
+- Update README.md
+- Update README.md
+- Temporarily deprecating commands broken by drush 9. (#2089) (#2096)
+- Note about docker and headless chrome (#2091)
+- Update .travis.yml
+- Update configuration-management.md (#2051)
+- Fixes #2046: Modifying BLT Configuration definition is not accurate. (#2047)
+- Fix spacing in simplesamlphp setup readme. (#2044)
+- Update extending-blt.md (#2015)
+- readme/deploy.md: fixed an invalid command in the documentation, the executable was enumerated twice. (#1996)
+- Change behat version restrictions to work with lightning. (#1993)
+- Adding update message.
+- Fixes #1980: Namespace problem when running blt vm.
+- Add section to provide step for testing SimpleSAMLphp library (#1974)
+- Update config-split.md
+- Update mkdocs.yml
+- Updating config split docs. (#1969)
+- Fixes #1838: Improving config split support for multisite. (#1944)
+- Fixes #1914: BLT Schema out of date process. (#1943)
+- Fixes #1936: You must install an Ansible version >= 2.2 to use this version of Drupal VM. (#1940)
+- Update adding-to-project.md (#1927)
+- Update skills.md to remove mention of Acquia (#1925)
+- Sync db and files to ODEs automatically. (#1920)
+- Travis should only exit early for docs on PRs. (#1912)
+- Adding notification after phphcs failure.
+- Fixed pass-by-reference error. (#1907)
+- Update dependency-management.md
+- Update frontend.md
+- Update mkdocs.yml
+- Update dependency-management.md
+- Update dependency-management.md
+- Fixes #1903: 8.9.1 Feedback. (#1904)
+
 
 ## [8.9.1](https://github.com/acquia/blt/tree/8.9.1) (2017-08-08)
 [Full Changelog](https://github.com/acquia/blt/compare/8.9.0...8.9.1)

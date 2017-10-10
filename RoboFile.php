@@ -23,7 +23,6 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
   protected $currentBranch;
   protected $tag;
   protected $prevTag;
-  protected $date;
   protected $gitHubToken;
 
   /**
@@ -34,6 +33,62 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
   public function initialize() {
     $this->bltRoot = __DIR__;
     $this->bin = $this->bltRoot . '/vendor/bin';
+  }
+
+  /**
+   * Executes pre-release tests against blt-project 9.x-dev.
+   *
+   * @option base-branch The blt-project (NOT blt) branch.
+   */
+  public function test($options = [
+    'base-branch' => '9.x',
+  ]) {
+    $this->stopOnFail();
+    $test_project_dir = $this->bltRoot . "/../blted8";
+    if (file_exists($test_project_dir . "/.vagrant")) {
+      $this->taskExecStack()
+        ->exec("vagrant destroy")
+        ->dir($test_project_dir)
+        ->run();
+    }
+    if (file_exists($test_project_dir)) {
+      $this->logger->warning("This will destroy the $test_project_dir directory!");
+      $this->say("If you did not execute tests using `sudo`, this may fail.");
+      $continue = $this->confirm("Continue?");
+      if (!$continue) {
+        return 1;
+      }
+    }
+
+    $this->taskDeleteDir($test_project_dir)->run();
+    $this->taskExecStack()
+      ->dir($this->bltRoot . "/..")
+      ->exec("COMPOSER_PROCESS_TIMEOUT=2000 composer create-project acquia/blt-project:{$options['base-branch']}-dev blted8 --no-interaction")
+      ->run();
+
+    $bin = $test_project_dir . "/vendor/bin";
+    $continue = $this->confirm("Ready to boot VM?");
+    if (!$continue) {
+      return 1;
+    }
+    $this->taskExecStack()
+      ->dir($test_project_dir)
+      ->exec("$bin/blt vm --yes")
+      ->exec("$bin/blt validate")
+      ->exec("$bin/blt setup")
+      ->exec("$bin/blt tests")
+      ->run();
+
+    $this->say("<info>Completed testing on VM.</info>");
+    $continue = $this->confirm("Destroy VM and continue?");
+    if (!$continue) {
+      // Not really a failure.
+      return 0;
+    }
+    $this->taskExecStack()
+      ->dir($test_project_dir)
+      ->exec("$bin/blt vm:nuke")
+      ->run();
   }
 
   /**
@@ -51,7 +106,10 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
    */
   public function bltRelease(
     $tag,
-    $github_token
+    $github_token,
+    $options = [
+      'prev-tag' => null,
+    ]
   ) {
     $this->stopOnFail();
 
@@ -75,8 +133,12 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
 
     $this->gitHubToken = $github_token;
     $this->tag = $tag;
-    $this->prevTag = $this->getLastTagOnBranch($this->currentBranch);
-    $this->date = date("Y-m-d");
+    if (!empty($options['prev-tag'])) {
+      $this->prevTag = $options['prev-tag'];
+    }
+    else {
+      $this->prevTag = $this->getLastTagOnBranch($this->currentBranch);
+    }
 
     $branch_exists_upstream = $this->taskExecStack()
       ->exec("git ls-remote --exit-code . origin/{$this->currentBranch} &> /dev/null")
@@ -126,12 +188,33 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
   /**
    * Update CHANGELOG.md with notes for new release.
    *
+   * @param string $tag
+   *   The tag name. E.g, 8.6.10.
+   * @param string $github_token
+   *   A github access token.
+   *
    * @return int
    *   The CLI status code.
    */
-  public function releaseNotes($tag) {
+  public function releaseNotes(
+    $tag,
+    $github_token,
+    $options = [
+      'prev-tag' => null,
+    ]
+  ) {
+    $this->gitHubToken = $github_token;
+    $this->tag = $tag;
+    $this->currentBranch = $this->getCurrentBranch();
+    if (!empty($options['prev-tag'])) {
+      $this->prevTag = $options['prev-tag'];
+    }
+    else {
+      $this->prevTag = $this->getLastTagOnBranch($this->currentBranch);
+    }
+
     // @todo Check git version.
-    $changes = $this->generateReleaseNotes($this->currentBranch, $tag);
+    $changes = $this->generateReleaseNotes($this->currentBranch);
     $this->updateChangelog($tag, $changes);
   }
 
@@ -141,22 +224,21 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
    * @return string
    */
   protected function generateReleaseNotes($current_branch) {
-    $prev_tag = $this->getLastTagOnBranch($current_branch);
-    $log = $this->getChangesOnBranchSinceTag($prev_tag);
+    $log = $this->getChangesOnBranchSinceTag($this->prevTag);
     $changes = $this->sortChanges($log);
 
     $text = '';
     $text .= "[Full Changelog](https://github.com/acquia/blt/compare/{$this->prevTag}...{$this->tag})\n\n";
     if (!empty($changes['enhancements'])) {
       $text .= "**Implemented enhancements**\n\n";
-      $text .= $this->processReleaseNotesSection($changes['enchancements']);
+      $text .= $this->processReleaseNotesSection($changes['enhancements']);
     }
     if (!empty($changes['bugs'])) {
-      $text .= "\n\n**Fixed bugs**\n\n";
+      $text .= "\n**Fixed bugs**\n\n";
       $text .= $this->processReleaseNotesSection($changes['bugs']);
     }
     if (!empty($changes['misc'])) {
-      $text .= "\n\n**Miscellaneous**\n\n";
+      $text .= "\n**Miscellaneous**\n\n";
       $text .= $this->processReleaseNotesSection($changes['misc']);
     }
 
@@ -268,7 +350,7 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
    */
   protected function updateChangelog($tag, $changes) {
     $this->taskChangelog('CHANGELOG.md')
-      ->setHeader("#### {$this->tag} ({$this->date})\n\n")
+      ->setHeader("#### $tag (" . date("Y-m-d") .")\n\n")
       ->setBody($changes)
       ->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE)
       ->run();
@@ -364,7 +446,7 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
    */
   protected function getGitHubIssueLabels(Issue $issue_api, $github_issue_number) {
     $issue = $issue_api->show('acquia', 'blt', $github_issue_number);
-    $labels = isset($issue['labels']) ? isset($issue['labels']) : [];
+    $labels = isset($issue['labels']) ? $issue['labels'] : [];
 
     return $labels;
   }
