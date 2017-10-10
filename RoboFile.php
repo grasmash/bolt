@@ -320,9 +320,11 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
    *
    * @param array $log_entries
    *   An array of log changes. Typically each row would be a commit message.
+   * @param string $github_token
+   *   A github access token.
    *
    * @return array
-   *   A multidimensional array grouped by the labels enchancement and bug.
+   *   A multidimensional array grouped by the labels enhancement and bug.
    */
   protected function sortChanges($log_entries, $github_token) {
     $client = new Client();
