@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "08938fe475c403ef8fcff82ae53b1b38",
+    "content-hash": "07d6a638f84b7caddf29df998584e258",
     "packages": [
         {
             "name": "asm89/twig-lint",
@@ -478,12 +478,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/consolidation/Robo.git",
-                "reference": "1146bb6301df52be737e4bbf13ceb09c244997d2"
+                "reference": "2775406d939ed8f421e07c3ae79880dc6d8d0012"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/consolidation/Robo/zipball/1146bb6301df52be737e4bbf13ceb09c244997d2",
-                "reference": "1146bb6301df52be737e4bbf13ceb09c244997d2",
+                "url": "https://api.github.com/repos/consolidation/Robo/zipball/2775406d939ed8f421e07c3ae79880dc6d8d0012",
+                "reference": "2775406d939ed8f421e07c3ae79880dc6d8d0012",
                 "shasum": ""
             },
             "require": {
@@ -549,7 +549,7 @@
                 }
             ],
             "description": "Modern task runner",
-            "time": "2017-10-10T17:00:40+00:00"
+            "time": "2017-10-12T14:29:03+00:00"
         },
         {
             "name": "container-interop/container-interop",
@@ -3918,16 +3918,16 @@
         },
         {
             "name": "composer/composer",
-            "version": "dev-master",
+            "version": "1.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/composer.git",
-                "reference": "edece864e7e4c668dcad6601df70777882d22116"
+                "reference": "c639623fa2178b404ed4bab80f0d1263853fa4ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/composer/zipball/edece864e7e4c668dcad6601df70777882d22116",
-                "reference": "edece864e7e4c668dcad6601df70777882d22116",
+                "url": "https://api.github.com/repos/composer/composer/zipball/c639623fa2178b404ed4bab80f0d1263853fa4ae",
+                "reference": "c639623fa2178b404ed4bab80f0d1263853fa4ae",
                 "shasum": ""
             },
             "require": {
@@ -3960,7 +3960,7 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.6-dev"
+                    "dev-master": "1.5-dev"
                 }
             },
             "autoload": {
@@ -3991,7 +3991,7 @@
                 "dependency",
                 "package"
             ],
-            "time": "2017-09-19T08:42:10+00:00"
+            "time": "2017-09-11T14:59:26+00:00"
         },
         {
             "name": "composer/spdx-licenses",
@@ -5131,8 +5131,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
-        "consolidation/robo": 20,
-        "composer/composer": 20
+        "consolidation/robo": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,

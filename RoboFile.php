@@ -432,7 +432,7 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
       ) . "\n";
     return $text;
   }
-  
+
   /**
    * @param $current_branch
    * @param string $remote
