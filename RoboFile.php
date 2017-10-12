@@ -108,7 +108,7 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
     $tag,
     $github_token,
     $options = [
-      'prev-tag' => null,
+      'prev-tag' => NULL,
     ]
   ) {
     $this->stopOnFail();
@@ -200,7 +200,7 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
     $tag,
     $github_token,
     $options = [
-      'prev-tag' => null,
+      'prev-tag' => NULL,
     ]
   ) {
     $this->gitHubToken = $github_token;
@@ -350,7 +350,7 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
    */
   protected function updateChangelog($tag, $changes) {
     $this->taskChangelog('CHANGELOG.md')
-      ->setHeader("#### $tag (" . date("Y-m-d") .")\n\n")
+      ->setHeader("#### $tag (" . date("Y-m-d") . ")\n\n")
       ->setBody($changes)
       ->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE)
       ->run();
