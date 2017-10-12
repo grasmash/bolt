@@ -430,6 +430,112 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
       ) . "\n";
     return $text;
   }
+  
+  /**
+   * @param $current_branch
+   * @param string $remote
+   *
+   * @throws \Acquia\Blt\Robo\Exceptions\BltException
+   */
+  protected function branchExistsUpstream($current_branch, $remote = 'origin') {
+    $branch_exists_upstream = $this->taskExecStack()
+      ->exec("git ls-remote --exit-code . $remote/$current_branch &> /dev/null")
+      ->silent(TRUE)
+      ->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE)
+      ->run()
+      ->wasSuccessful();
+    if (!$branch_exists_upstream) {
+      $this->say("Please run <comment>git push $remote $current_branch</comment>");
+      throw new BltException("$current_branch does not exist on the $remote remote!");
+    }
+  }
+
+  /**
+   * Checks to see if current git branch has uncommitted changes.
+   *
+   * @throws \Exception
+   *   Thrown if deploy.git.failOnDirty is TRUE and there are uncommitted
+   *   changes.
+   */
+  protected function checkDirty() {
+    $result = $this->taskExec('git status --porcelain')
+      ->printMetadata(FALSE)
+      ->printOutput(FALSE)
+      ->interactive(FALSE)
+      ->run();
+    if (!$result->wasSuccessful()) {
+      throw new BltException("Unable to determine if local git repository is dirty.");
+    }
+
+    $dirty = (bool) $result->getMessage();
+    if ($dirty) {
+      throw new BltException("There are uncommitted changes, commit or stash these changes before deploying.");
+    }
+  }
+
+  /**
+   * @param $tag
+   * @param $current_branch
+   */
+  protected function printReleasePreamble($tag, $current_branch) {
+    $this->logger->warning("Please run all release tests before executing this command!");
+    $this->say("To run release tests, execute <comment>./vendor/bin/robo test</comment>");
+    $this->output()->writeln('');
+    $this->say("Continuing will do the following:");
+    $this->say("- <comment>Destroy any uncommitted work on the current branch.</comment>");
+    $this->say("- Hard reset to origin/$current_branch");
+    $this->say("- Update and <comment>commit</comment> CHANGELOG.md");
+    $this->say("- <comment>Push</comment> $current_branch to origin");
+    $this->say("- Create a $tag release in GitHub with release notes");
+  }
+
+  protected function getPrevTag($options, $current_branch) {
+    if (!empty($options['prev-tag'])) {
+      return $options['prev-tag'];
+    }
+    else {
+      return $this->getLastTagOnBranch($current_branch);
+    }
+  }
+
+  /**
+   * @param $commitish
+   * @param $tag
+   * @param $description
+   * @param $github_token
+   */
+  protected function createGitHubRelease(
+    $commitish,
+    $tag,
+    $description,
+    $github_token
+  ) {
+    $result = $this->taskGitHubRelease($tag)
+      ->uri('acquia/blt')
+      ->comittish($commitish)
+      ->name($tag)
+      ->description($description)
+      ->draft(TRUE)
+      ->accessToken($github_token)
+      ->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE)
+      ->run();
+
+    $data = $result->getData();
+    $response = $data['response'];
+    $this->taskOpenBrowser($response->html_url)->run();
+  }
+
+  /**
+   * @param $current_branch
+   */
+  protected function resetLocalBranch($current_branch) {
+    // Clean up all staged and unstaged files on current branch.
+    $this->taskGitStack()
+      ->exec('clean -fd .')
+      ->exec('remote update')
+      ->exec("reset --hard origin/$current_branch")
+      ->run();
+  }
 
   /**
    * @param $current_branch
