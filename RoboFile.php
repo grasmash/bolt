@@ -36,9 +36,14 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
    * Create a new project via symlink from current checkout of BLT.
    *
    * Local BLT will be symlinked to blted8/vendor/acquia/blt.
+   *
+   * @option project-dir The directory in which the test project will be
+   *   created.
    */
-  public function createSymlinkedProject() {
-    $test_project_dir = $this->bltRoot . "/../blted8";
+  public function createSymlinkedProject($options = [
+    'project-dir' => '../blted8',
+  ]) {
+    $test_project_dir = $this->bltRoot . "/" . $options['project-dir'];
     $bin = $test_project_dir . "/vendor/bin";
     $this->prepareTestProjectDir($test_project_dir);
     $this->taskExecStack()
@@ -71,11 +76,16 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
    * Create a new project using `composer create-project acquia/blt-project'.
    *
    * @option base-branch The blt-project (NOT blt) branch to test.
+   * @option project-dir The directory in which the test project will be
+   *   created.
    */
   public function createStandaloneProject($options = [
     'base-branch' => '9.x',
+    'project-dir' => '../blted8',
   ]) {
-    $this->yell("Creatint project from acquia/blt-project:{$options['base-branch']}-dev.");
+    $test_project_dir = $this->bltRoot . "/" . $options['project-dir'];
+    $this->prepareTestProjectDir($test_project_dir);
+    $this->yell("Creating project from acquia/blt-project:{$options['base-branch']}-dev.");
     $this->taskExecStack()
       ->dir($this->bltRoot . "/..")
       ->exec("COMPOSER_PROCESS_TIMEOUT=2000 composer create-project acquia/blt-project:{$options['base-branch']}-dev blted8 --no-interaction")
@@ -86,23 +96,25 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
    * Executes pre-release tests against blt-project 9.x-dev.
    *
    * @option base-branch The blt-project (NOT blt) branch to test.
+   * @option project-dir The directory in which the test project will be
+   *   created.
    */
-  public function test($options = [
+  public function releaseTest($options = [
     'base-branch' => '9.x',
     'environment' => 'local',
     'create-project' => TRUE,
+    'project-dir' => '../blted8',
     'project-type' => 'standalone',
     'vm' => TRUE,
   ]) {
     $this->stopOnFail();
 
     $use_vm = $options['vm'];
-    $test_project_dir = $this->bltRoot . "/../blted8";
+    $test_project_dir = $this->bltRoot . "/" . $options['project-dir'];
 
     if ($options['create-project']) {
-      $this->prepareTestProjectDir($test_project_dir);
       if ($options['project-type'] == 'symlink') {
-        $this->createSymlinkedProject();
+        $this->createSymlinkedProject($options);
       }
       else {
         $this->createStandaloneProject($options);
@@ -121,39 +133,40 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
       // ->exec("$bin/blt acsf:init --yes")
       ->exec("{$this->bltRoot}/vendor/bin/robo sniff-code --load-from {$this->bltRoot}");
 
+    $drush_alias = '@self';
     if ($use_vm) {
       $task->exec("$bin/blt vm --no-interaction --yes -vvv");
+      $drush_alias = '@blted8.local';
     }
     else {
-      // Add Drupal VM config to repo.
+      // Add Drupal VM config to repo without booting.
       $task->exec("$bin/blt vm --no-boot --no-interaction --yes -vvv");
     }
 
     $task
-      ->exec("$bin/yaml-cli update:value blt/project.yml cm.strategy none")
       ->exec("$bin/blt validate -vvv")
+      ->exec("$bin/yaml-cli update:value blt/project.yml cm.strategy none")
       // The tick-tock.sh script is used to prevent timeout.
       ->exec("{$this->bltRoot}/scripts/blt/ci/tick-tock.sh $bin/blt setup --define environment={$options['environment']} -vvv")
       ->exec("$bin/blt tests --define environment={$options['environment']} -vvv")
       ->exec("$bin/blt tests:behat:definitions -vvv")
       // Test core-only config management.
-      // @todo Use drush alias if $use_vm.
-      ->exec("$bin/drush config-export --root=$test_project_dir/docroot --yes")
+      ->exec("$bin/drush $drush_alias config-export --root=$test_project_dir/docroot --yes")
       ->exec("$bin/yaml-cli update:value blt/project.yml cm.strategy core-only")
       ->exec("$bin/blt setup:config-import -vvv")
       // Test features config management.
       ->exec("$bin/yaml-cli update:value blt/project.yml cm.strategy features")
       ->exec("rm -rf $test_project_dir/config/default/*")
-      ->exec("$bin/drush en features --root=$test_project_dir/docroot --yes")
+      ->exec("$bin/drush $drush_alias en features --root=$test_project_dir/docroot --yes")
       ->exec("$bin/blt setup:config-import -vvv")
-      ->exec("$bin/drush pm-uninstall features --root=$test_project_dir/docroot --yes")
+      ->exec("$bin/drush $drush_alias pm-uninstall features --root=$test_project_dir/docroot --yes")
       // Test config split.
       ->exec("$bin/yaml-cli update:value blt/project.yml cm.strategy config-split")
-      ->exec("$bin/drush en config-split --root=$test_project_dir/docroot --yes")
-      ->exec("$bin/drush config-export --root=$test_project_dir/docroot --yes")
+      ->exec("$bin/drush $drush_alias en config-split --root=$test_project_dir/docroot --yes")
+      ->exec("$bin/drush $drush_alias config-export --root=$test_project_dir/docroot --yes")
       ->exec("mv {$this->bltRoot}/scripts/blt/ci/internal/config_split.config_split.ci.yml {$this->bltRoot}/config/default/")
       ->exec("$bin/blt setup:config-import -vvv")
-      ->exec("$bin/drush pm-uninstall config-split --root=$test_project_dir/docroot --yes")
+      ->exec("$bin/drush $drush_alias pm-uninstall config-split --root=$test_project_dir/docroot --yes")
       ->exec("rm -rf $test_project_dir/config/default/*")
       // Test deploy.
       ->exec("$bin/blt deploy:update -vvv")
@@ -598,33 +611,6 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
   }
 
   /**
-   * @param $commitish
-   * @param $tag
-   * @param $description
-   * @param $github_token
-   */
-  protected function createGitHubRelease(
-    $commitish,
-    $tag,
-    $description,
-    $github_token
-  ) {
-    $result = $this->taskGitHubRelease($tag)
-      ->uri('acquia/blt')
-      ->comittish($commitish)
-      ->name($tag)
-      ->description($description)
-      ->draft(TRUE)
-      ->accessToken($github_token)
-      ->setVerbosityThreshold(VerbosityThresholdInterface::VERBOSITY_VERBOSE)
-      ->run();
-
-    $data = $result->getData();
-    $response = $data['response'];
-    $this->taskOpenBrowser($response->html_url)->run();
-  }
-
-  /**
    * @param $current_branch
    */
   protected function resetLocalBranch($current_branch) {
@@ -656,54 +642,6 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
   }
 
   /**
-   * Checks to see if current git branch has uncommitted changes.
-   *
-   * @throws \Exception
-   *   Thrown if deploy.git.failOnDirty is TRUE and there are uncommitted
-   *   changes.
-   */
-  protected function checkDirty() {
-    $result = $this->taskExec('git status --porcelain')
-      ->printMetadata(FALSE)
-      ->printOutput(FALSE)
-      ->interactive(FALSE)
-      ->run();
-    if (!$result->wasSuccessful()) {
-      throw new BltException("Unable to determine if local git repository is dirty.");
-    }
-
-    $dirty = (bool) $result->getMessage();
-    if ($dirty) {
-      throw new BltException("There are uncommitted changes, commit or stash these changes before deploying.");
-    }
-  }
-
-  /**
-   * @param $tag
-   * @param $current_branch
-   */
-  protected function printReleasePreamble($tag, $current_branch) {
-    $this->logger->warning("Please run all release tests before executing this command!");
-    $this->say("To run release tests, execute <comment>./vendor/bin/robo test</comment>");
-    $this->output()->writeln('');
-    $this->say("Continuing will do the following:");
-    $this->say("- <comment>Destroy any uncommitted work on the current branch.</comment>");
-    $this->say("- Hard reset to origin/$current_branch");
-    $this->say("- Update and <comment>commit</comment> CHANGELOG.md");
-    $this->say("- <comment>Push</comment> $current_branch to origin");
-    $this->say("- Create a $tag release in GitHub with release notes");
-  }
-
-  protected function getPrevTag($options, $current_branch) {
-    if (!empty($options['prev-tag'])) {
-      return $options['prev-tag'];
-    }
-    else {
-      return $this->getLastTagOnBranch($current_branch);
-    }
-  }
-
-  /**
    * @param $commitish
    * @param $tag
    * @param $description
@@ -728,18 +666,6 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
     $data = $result->getData();
     $response = $data['response'];
     $this->taskOpenBrowser($response->html_url)->run();
-  }
-
-  /**
-   * @param $current_branch
-   */
-  protected function resetLocalBranch($current_branch) {
-    // Clean up all staged and unstaged files on current branch.
-    $this->taskGitStack()
-      ->exec('clean -fd .')
-      ->exec('remote update')
-      ->exec("reset --hard origin/$current_branch")
-      ->run();
   }
 
   /**
