@@ -65,7 +65,7 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
       ->dir($test_project_dir)
       // BLT is the only dependency at this point. Install it.
       ->exec("composer install")
-      ->exec("$bin/blt vm:config -vvv")
+      ->exec("$bin/blt vm --no-boot --no-interaction --yes -v")
       ->exec("$bin/yaml-cli update:value box/config.yml vagrant_synced_folders.1.local_path '../blt'")
       ->exec("$bin/yaml-cli update:value box/config.yml vagrant_synced_folders.1.destination '/var/www/blt'")
       ->exec("$bin/yaml-cli update:value box/config.yml vagrant_synced_folders.1.type nfs")
@@ -124,10 +124,10 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
     $bin = $test_project_dir . "/vendor/bin";
     $task = $this->taskExecStack()
       ->dir($test_project_dir)
-      ->exec("$bin/blt ci:travis:init -vvv")
-      ->exec("$bin/blt ci:pipelines:init -vvv")
-      ->exec("$bin/blt acsf:init:hooks -vvv")
-      ->exec("$bin/blt setup:cloud-hooks -vvv")
+      ->exec("$bin/blt ci:travis:init -v")
+      ->exec("$bin/blt ci:pipelines:init -v")
+      ->exec("$bin/blt acsf:init:hooks -v")
+      ->exec("$bin/blt setup:cloud-hooks -v")
       // Dump all config values to screen.
       ->exec("$bin/blt config:dump")
       // ->exec("$bin/blt acsf:init --yes")
@@ -135,7 +135,7 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
 
     $drush_alias = '@self';
     if ($use_vm) {
-      $task->exec("$bin/blt vm --no-interaction --yes -vvv");
+      $task->exec("$bin/blt vm --no-interaction --yes -v");
       $drush_alias = '@blted8.local';
     }
     else {
@@ -144,36 +144,36 @@ class RoboFile extends Tasks implements LoggerAwareInterface {
     }
 
     $task
-      ->exec("$bin/blt validate -vvv")
+      ->exec("$bin/blt validate -v")
       ->exec("$bin/yaml-cli update:value blt/project.yml cm.strategy none")
       // The tick-tock.sh script is used to prevent timeout.
       ->exec("{$this->bltRoot}/scripts/blt/ci/tick-tock.sh $bin/blt setup --define environment={$options['environment']} -vvv")
-      ->exec("$bin/blt tests --define environment={$options['environment']} -vvv")
-      ->exec("$bin/blt tests:behat:definitions -vvv")
+      ->exec("$bin/blt tests --define environment={$options['environment']} -v")
+      ->exec("$bin/blt tests:behat:definitions -v")
       // Test core-only config management.
       ->exec("$bin/drush $drush_alias config-export --root=$test_project_dir/docroot --yes")
       ->exec("$bin/yaml-cli update:value blt/project.yml cm.strategy core-only")
-      ->exec("$bin/blt setup:config-import -vvv")
+      ->exec("$bin/blt setup:config-import -v")
       // Test features config management.
       ->exec("$bin/yaml-cli update:value blt/project.yml cm.strategy features")
       ->exec("rm -rf $test_project_dir/config/default/*")
       ->exec("$bin/drush $drush_alias en features --root=$test_project_dir/docroot --yes")
-      ->exec("$bin/blt setup:config-import -vvv")
+      ->exec("$bin/blt setup:config-import -v")
       ->exec("$bin/drush $drush_alias pm-uninstall features --root=$test_project_dir/docroot --yes")
       // Test config split.
       ->exec("$bin/yaml-cli update:value blt/project.yml cm.strategy config-split")
       ->exec("$bin/drush $drush_alias en config-split --root=$test_project_dir/docroot --yes")
       ->exec("$bin/drush $drush_alias config-export --root=$test_project_dir/docroot --yes")
       ->exec("mv {$this->bltRoot}/scripts/blt/ci/internal/config_split.config_split.ci.yml {$this->bltRoot}/config/default/")
-      ->exec("$bin/blt setup:config-import -vvv")
+      ->exec("$bin/blt setup:config-import -v")
       ->exec("$bin/drush $drush_alias pm-uninstall config-split --root=$test_project_dir/docroot --yes")
       ->exec("rm -rf $test_project_dir/config/default/*")
       // Test deploy.
-      ->exec("$bin/blt deploy:update -vvv")
+      ->exec("$bin/blt deploy:update -v")
       // Test SAML.
-      ->exec("$bin/blt simplesamlphp:init -vvv")
+      ->exec("$bin/blt simplesamlphp:init -v")
       // Test that custom commands are loaded.
-      ->exec("$bin/blt custom:hello -vvv")
+      ->exec("$bin/blt custom:hello -v")
       // Execute PHP Unit tests.
       ->exec("$bin/phpunit {$this->bltRoot}/tests/phpunit --group blt --exclude-group deploy -v")
       ->exec("$bin/phpunit {$this->bltRoot}/tests/phpunit --group blt-project -c {$this->bltRoot}/tests/phpunit/phpunit.xml -v")
